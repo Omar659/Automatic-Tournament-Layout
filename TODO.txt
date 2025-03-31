@@ -3,3 +3,5 @@ Giocatori dispari a squadre, va fatto un ripescaggio per il giocatore solo
 
 Non mi crea la partita di ripescaggio nei turni successivi al primo
     idea, quando si creano le nuove partite del nuovo round vedere la lunghezza e in caso assegnare il flag extra a true
+
+Mettere un icona e i titoli fatti meglio di pagina
