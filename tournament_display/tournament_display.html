@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Torneo a Eliminazione Diretta</title>
+    <link rel="stylesheet" href="tournament_display.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Torneo a Eliminazione Diretta</h1>
+        </header>
+
+        <div id="bracketContainer">
+            <!-- Qui verranno generati i round del torneo -->
+        </div>
+
+        <div class="controls">
+            <button id="nextRoundBtn" disabled>Prossimo Turno</button>
+            <button id="selectLuckyLoserBtn" disabled>Scegli Ripescato</button>
+        </div>
+        <div class="reset">
+            <button id="newTournamentBtn">Nuovo Torneo</button>
+            <button id="resetTournamentBtn">Reset Torneo</button>
+        </div>
+    </div>
+
+    <script src="tournament_display.js"></script>
+</body>
+
+</html>

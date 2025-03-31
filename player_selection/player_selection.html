@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Selezione Giocatori</title>
+    <link rel="stylesheet" href="player_selection.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Selezione Giocatori</h1>
+            <p>Inserisci il nickname dei giocatori (min 6, max 32)</p>
+        </header>
+
+        <section class="input-section">
+            <input type="text" id="nicknameInput" placeholder="Inserisci nickname...">
+            <button id="addPlayerBtn">Aggiungi</button>
+        </section>
+        <!-- Messaggio d'errore per nickname duplicato -->
+        <p id="errorMessage" class="error-message"></p>
+
+        <section class="players-section">
+            <h2>Giocatori (<span id="playerCount">0</span>/32)</h2>
+            <ul id="playersList">
+                <!-- I nomi verranno aggiunti qui -->
+            </ul>
+        </section>
+
+        <footer>
+            <button id="nextBtn">Avanti</button>
+        </footer>
+    </div>
+
+    <script src="player_selection.js"></script>
+</body>
+
+</html>

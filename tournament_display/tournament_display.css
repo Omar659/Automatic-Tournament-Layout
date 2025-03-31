@@ -1,0 +1,159 @@
+/* Stile generale */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #89f7fe;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 900px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    color: #333;
+}
+
+#bracketContainer {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+}
+
+.round {
+    min-width: 200px;
+    margin-right: 20px;
+}
+
+.round h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.match {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.match.extra {
+    background-color: #ffe4b5;
+}
+
+.competitor {
+    transition: background-color 0.3s ease;
+}
+
+.match .competitor {
+    padding: 5px;
+    margin: 3px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-radius: 4px;
+}
+
+.match .competitor:hover {
+    background-color: #e0e0e0;
+}
+
+.match .competitor.selected {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+.controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.controls button {
+    padding: 10px 30px;
+    background-color: #2ecc71;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px;
+}
+
+.controls button:hover {
+    background-color: #27ae60;
+}
+
+.controls button:disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.reset {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.reset button {
+    padding: 10px 30px;
+    background-color: #2e6dcc;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px;
+}
+
+.reset button:hover {
+    background-color: #2766ae;
+}
+
+
+
+
+/* Disattiva tutti i match (tranne l'extra quando serve) */
+.disabled-match {
+    pointer-events: none;  /* Disabilita i click */
+    opacity: 0.5;         /* Opzionale: Visivamente meno evidente */
+    cursor: default !important;
+}
+
+/* Disattiva i match extra di default */
+.match.extra.disabled-match {
+    pointer-events: none;
+}
+
+/* Attiva solo il match extra quando serve */
+.active-extra {
+    pointer-events: auto;
+    opacity: 1;
+    cursor: pointer;
+}
+
+/* Disabilita l'hover sui match disattivati */
+.disabled-match .competitor:hover {
+    background-color: inherit !important;
+}

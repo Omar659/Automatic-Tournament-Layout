@@ -1,0 +1,5 @@
+Giocatori dispari a squadre, va fatto un ripescaggio per il giocatore solo 
+    idea, quello solo va nella partita di ripescaggio giocando contro la squadra ripescata normalmente, e casualmentre tra le altre squadre che hanno perso si ripesca una persona
+
+Non mi crea la partita di ripescaggio nei turni successivi al primo
+    idea, quando si creano le nuove partite del nuovo round vedere la lunghezza e in caso assegnare il flag extra a true
