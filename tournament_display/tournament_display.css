@@ -21,6 +21,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 95%;
     max-width: 900px;
+    position: relative;
 }
 
 header {
@@ -156,4 +157,44 @@ header h1 {
 /* Disabilita l'hover sui match disattivati */
 .disabled-match .competitor:hover {
     background-color: inherit !important;
+}
+
+/* Stile per l'icona di aiuto */
+.help-icon {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #2e9acc;
+    color: #fff;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* Stile per la modale di aiuto */
+.help-modal {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    right: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    width: 450px;
+    font-size: small;
+}
+
+/* Mostra la modale quando si passa il mouse sull'icona */
+.help-icon:hover + .help-modal,
+.help-modal:hover {
+    display: block;
 }

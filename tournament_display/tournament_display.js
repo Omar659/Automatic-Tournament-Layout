@@ -38,7 +38,15 @@ function loadTournament() {
  * Funzione ausiliaria per randomizzare un array
  */
 function shuffleArray(arr) {
-    return arr.slice().sort(() => Math.random() - 0.5);
+    const lastElement = arr[arr.length - 1];
+    const hasSpecialElement = lastElement.includes("???");
+
+    if (hasSpecialElement) {
+        const shuffled = arr.slice(0, -1).sort(() => Math.random() - 0.5);
+        return [...shuffled, lastElement];
+    } else {
+        return arr.slice().sort(() => Math.random() - 0.5);
+    }
 }
 
 /**
@@ -49,13 +57,13 @@ function shuffleArray(arr) {
 function generateInitialParticipants(players) {
     // Randomizza sempre l'array dei giocatori
     const shuffled = players.slice().sort(() => Math.random() - 0.5);
-    if (players.length >= 12) {
+    if (players.length >= 9) {
         const teams = [];
         for (let i = 0; i < shuffled.length; i += 2) {
             if (i + 1 < shuffled.length) {
                 teams.push(`${shuffled[i]} & ${shuffled[i + 1]}`);
             } else {
-                teams.push(shuffled[i]);
+                teams.push(`${shuffled[i]} & ???`);
             }
         }
         return teams;
@@ -101,6 +109,43 @@ function generateInitialRound(participants) {
 }
 
 /**
+ * Genera il round successivo a partire dai vincitori del round corrente
+ */
+function generateNextRound(currentRound) {
+    const winners = getRoundWinners(currentRound);
+    if (winners.length < 1) return null;
+
+    const nextRound = { matches: [], oddCompetitor: null, luckyLoser: null };
+    const parts = winners.slice();
+
+    if (parts.length % 2 === 1) {
+        nextRound.oddCompetitor = parts.pop();
+    }
+    while (parts.length > 0) {
+        const comp1 = parts.shift();
+        const comp2 = parts.shift();
+        nextRound.matches.push({
+            id: 'm-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            competitor1: comp1,
+            competitor2: comp2,
+            winner: null,
+            isExtra: false
+        });
+    }
+
+    if (nextRound.oddCompetitor) {
+        nextRound.matches.push({
+            id: 'extra-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            competitor1: nextRound.oddCompetitor,
+            competitor2: "",
+            winner: null,
+            isExtra: true
+        });
+    }
+    return nextRound;
+}
+
+/**
  * Restituisce i vincitori del round
  */
 function getRoundWinners(round) {
@@ -131,33 +176,6 @@ function processOddAndLuckyButton(round) {
             document.getElementById('selectLuckyLoserBtn').disabled = matchNotWonNotExtra || matchesExtraChosen;
         }
     }
-}
-
-/**
- * Genera il round successivo a partire dai vincitori del round corrente
- */
-function generateNextRound(currentRound) {
-    const winners = getRoundWinners(currentRound);
-    if (winners.length < 1) return null;
-
-    const nextRound = { matches: [], oddCompetitor: null, luckyLoser: null };
-    const parts = winners.slice();
-
-    if (parts.length % 2 === 1) {
-        nextRound.oddCompetitor = parts.pop();
-    }
-    while (parts.length > 0) {
-        const comp1 = parts.shift();
-        const comp2 = parts.shift();
-        nextRound.matches.push({
-            id: 'm-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-            competitor1: comp1,
-            competitor2: comp2,
-            winner: null,
-            isExtra: false
-        });
-    }
-    return nextRound;
 }
 
 /**
@@ -360,6 +378,16 @@ document.getElementById('selectLuckyLoserBtn').addEventListener('click', () => {
         let luckyLoser = losers[Math.floor(Math.random() * losers.length)];
         let extraMatch = currRound.matches.find(m => m.isExtra);
         if (extraMatch) {
+            if (extraMatch.competitor1.includes("???")) {
+                let potentialPlayers = losers.filter(l => l !== luckyLoser)
+                    .flatMap(team => team.includes(" & ") ? team.split(" & ") : [team]);
+
+                if (potentialPlayers.length > 0) {
+                    let randomPlayer = potentialPlayers[Math.floor(Math.random() * potentialPlayers.length)];
+                    extraMatch.competitor1 = extraMatch.competitor1.replace("???", randomPlayer);
+                }
+            }
+
             extraMatch.competitor2 = luckyLoser;
             activateExtraMatchOnly(currRound); // Attiva solo il match extra
             saveTournament(tournament);
