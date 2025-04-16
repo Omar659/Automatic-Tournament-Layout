@@ -57,7 +57,7 @@ function shuffleArray(arr) {
 function generateInitialParticipants(players) {
     // Randomizza sempre l'array dei giocatori
     const shuffled = players.slice().sort(() => Math.random() - 0.5);
-    if (players.length >= 0) {
+    if (players.length >= 9) {
         const teams = [];
         for (let i = 0; i < shuffled.length; i += 2) {
             if (i + 1 < shuffled.length) {
