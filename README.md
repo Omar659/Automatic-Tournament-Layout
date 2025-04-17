@@ -2,32 +2,29 @@
 
 Select playing members in a tournament from 6 to 32 players. An automatic tournament will be generated and you can manage the various stages of it. With 9 or more players, the tournament will turn into a two-player team tournament
 
+## Pre-requisites
+
+1. Install [Anaconda](https://www.anaconda.com/docs/getting-started/anaconda/install)
+
+1. Create a fresh `conda` environment and activate it:
+
+    ```bash
+    conda create -y --name tournament
+    conda activate tournament
+    ```
+1. Install required packages:
+
+    ```bash
+    conda install pip
+    pip install -r requirements.txt
+    ```
+
 ## Host the webserver
 
-1. Install `npm` from the [official website](https://nodejs.org/en/download). At the moment, you can do it on Ubuntu like this:
+Simply run the following command:
 
-    ```bash
-    # Download and install nvm:
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
+```bash
+python index.py
+```
 
-    # in lieu of restarting the shell
-    \. "$HOME/.nvm/nvm.sh"
-
-    # Download and install Node.js:
-    nvm install 22
-
-    # Verify the Node.js version:
-    node -v # Should print "v22.14.0".
-    nvm current # Should print "v22.14.0".
-
-    # Verify npm version:
-    npm -v # Should print "10.9.2".
-    ```
-
-1. Run the following command:
-
-    ```bash
-    bash serve.sh
-    ```
-
-    Now the website can be viewed at [localhost](http://127.0.0.1:1337)
+Now the website can be viewed at [localhost](http://127.0.0.1:1337).

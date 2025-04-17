@@ -4,6 +4,7 @@ const addPlayerBtn = document.getElementById('addPlayerBtn');
 const playersList = document.getElementById('playersList');
 const playerCountSpan = document.getElementById('playerCount');
 const nextBtn = document.getElementById('nextBtn');
+const showPlayersBtn = document.getElementById('showPlayersBtn');
 const errorMessage = document.getElementById('errorMessage');
 
 const MIN_PLAYERS = 6;
@@ -145,6 +146,10 @@ nextBtn.addEventListener('click', () => {
     savePlayers();
     // Redirige alla pagina tournament_display.html
     window.location.href = './../tournament_display/tournament_display.html';   
+});
+
+showPlayersBtn.addEventListener('click', () => {
+    console.log("SIUM");
 });
 
 // Inizializza la pagina
