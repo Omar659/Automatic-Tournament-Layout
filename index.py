@@ -7,16 +7,13 @@ from pymongo.server_api import ServerApi
 from pymongo.errors import ConnectionFailure, OperationFailure
 
 from db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
-from widgets import AddPlayersWidget, PlayersListWidget
+from widgets import AddPlayersWidget, Header, PlayersListWidget
 
-# --- Configuration ---
-# !!! IMPORTANT: Replace with your actual MongoDB connection string !!!
 load_dotenv(".env")
 MONGO_URI = f"mongodb+srv://rom42pla:{os.environ['MONGODB_ATLAS_PASSWORD']}@cluster0.fg01xsr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DATABASE_NAME = "tournament_db"
 COLLECTION_NAME = "players"
 
-# --- Database Connection ---
 try:
     mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000) # 5 second timeout
     # The ismaster command is cheap and does not require auth.
@@ -36,12 +33,21 @@ except Exception as e:
     db_connection_ok = False
 
 
+@ui.page("/")
+def home():
+    header = Header()
 
-@ui.page('/')
+    with ui.card().classes('fixed-center'):
+        ui.label("Select players")
+
+
+@ui.page('/add_player')
 def add_player_page():
+    header = Header()
+    
     players_list_widget = PlayersListWidget(client=mongo_client)
     add_players_widget = AddPlayersWidget(client=mongo_client, players_list_widget=players_list_widget)
 
 
 # --- Run the App ---
-ui.run(title="Add Player (MongoDB)", port=1337)
+ui.run(title="Add Player (MongoDB)")

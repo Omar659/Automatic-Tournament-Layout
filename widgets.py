@@ -2,6 +2,17 @@ from nicegui import ui, app
 
 from db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
+class Header:
+
+    def __init__(self):
+        self.build()
+
+    def build(self):
+        with ui.header(elevated=True).style("background-color: #3874c8").classes(
+            "items-center justify-between"
+        ):
+            ui.label("Automatic Tournament Layout".upper())
+            
 class PlayersListWidget:
     def __init__(self, client):
         self.client = client

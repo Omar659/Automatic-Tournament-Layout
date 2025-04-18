@@ -1,10 +1,13 @@
 from nicegui import ui
 
+from models import Player
+
 def add_player_to_db(client, player_name):
     db = client["Storage"]
     collection = db["Players"]
-    mydict = { "name": player_name }
-    collection.insert_one(mydict)
+    player_obj = Player(name=player_name)
+    player_obj.id = collection.insert_one(player_obj.model_dump()).inserted_id
+    return player_obj
 
 def remove_player_from_db(client, player_name):
     db = client["Storage"]
@@ -14,9 +17,11 @@ def remove_player_from_db(client, player_name):
 def check_if_player_exists(client, player_name):
     db = client["Storage"]
     collection = db["Players"]
-    result = collection.find({"name": player_name})
-    exists = True if len(list(result)) > 0 else False
-    return exists
+    result = collection.find_one({"name": player_name})
+    player = None
+    if result:
+        player = Player(**result)
+    return player
 
 def get_players_list_from_db(client):
     try:

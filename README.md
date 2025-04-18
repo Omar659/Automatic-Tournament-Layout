@@ -15,8 +15,16 @@ Select playing members in a tournament from 6 to 32 players. An automatic tourna
 1. Install required packages:
 
     ```bash
-    conda install pip
+    conda install -y pip
     pip install -r requirements.txt
+    ```
+
+1. **(Optional)** If using WLS on Windows, you need to install an extra package to serve the website:
+
+    ```bash
+    sudo add-apt-repository -y ppa:wslutilities/wslu
+    sudo apt update -y
+    sudo apt install -y wslu
     ```
 
 ## Host the webserver
