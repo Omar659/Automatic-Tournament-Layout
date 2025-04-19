@@ -1,6 +1,6 @@
 from nicegui import ui, app
 
-from db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
+from .db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
 class Header:
 

@@ -1,6 +1,6 @@
 from nicegui import ui
 
-from models import Player
+from .models import Player
 
 def add_player_to_db(client, player_name):
     db = client["Storage"]
