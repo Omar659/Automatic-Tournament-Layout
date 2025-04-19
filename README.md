@@ -32,7 +32,7 @@ Select playing members in a tournament from 6 to 32 players. An automatic tourna
 Simply run the following command:
 
 ```bash
-python index.py
+bash serve.sh
 ```
 
 Now the website can be viewed at [localhost](http://127.0.0.1:1337).

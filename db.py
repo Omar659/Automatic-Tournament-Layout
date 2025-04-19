@@ -27,6 +27,6 @@ def get_players_list_from_db(client):
     try:
         db = client["Storage"]
         collection = db["Players"]
-        return [x for x in collection.find()]
+        return [Player(**x) for x in collection.find()]
     except Exception as e:
         print(e)
