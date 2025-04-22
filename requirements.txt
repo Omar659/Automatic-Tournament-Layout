@@ -1,0 +1,6 @@
+python-dotenv
+pydantic
+fastapi[standard]
+uvicorn[standard]
+pymongo[srv]
+nicegui
