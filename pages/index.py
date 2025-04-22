@@ -66,19 +66,19 @@ class Header():
                 else:
                     ui.button("Login", on_click=self.login)
 
-    def logout(self) -> None:
-        # deletes saved data
-        del app.storage.user['user_data']
-        # navigates again to the current url
-        url = str(ui.context.client.request.url)
-        ui.navigate.to(url)
-
     async def login(self):
         # saves current url
         app.storage.user["url_before_login"] = str(ui.context.client.request.url)
         # gets the url to do the login
         login_url = (await login_with_google())["url"]
         ui.navigate.to(login_url)
+
+    def logout(self) -> None:
+        # deletes saved data
+        del app.storage.user['user_data']
+        # navigates again to the current url
+        url = str(ui.context.client.request.url)
+        ui.navigate.to(url)
 
 @ui.page("/")
 async def home():

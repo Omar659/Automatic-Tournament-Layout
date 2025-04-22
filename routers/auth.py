@@ -9,9 +9,6 @@ from nicegui import app, ui
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# This is used to validate tokens, not for Google OAuth flow
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
-
 # Step 1: Generate Google OAuth2 login URL
 @router.get("/login_with_google")
 async def login_with_google():
@@ -63,9 +60,3 @@ async def auth_google(code: str):
     encoded_user_data = urllib.parse.quote_plus(str(user_data))
 
     return RedirectResponse(f"/login/finalize?data={encoded_user_data}")
-
-    # this says RuntimeError: app.storage.user can only be used within a UI context
-    # if not app.storage.user["url_before_login"]:
-    #     app.storage.user["url_before_login"] = "/"
-    # ui.redirect(app.storage.browser["url_before_login"])
-    return user_info.json()  # dict
