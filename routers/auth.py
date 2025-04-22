@@ -1,11 +1,11 @@
 # auth_google.py
 
 import os
-import requests
-from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import RedirectResponse
+import requests
+from fastapi import APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from nicegui import app, ui
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -56,13 +56,16 @@ async def auth_google(code: str):
     if user_info.status_code != 200:
         raise HTTPException(status_code=400, detail="Failed to get user info")
 
-    return user_info.json()  # 👈 You might want to create a local user here and return your own token
+    # Serialize user data and pass via query string
+    import urllib.parse
 
-# Step 3: Optional route to decode JWT (for testing)
-@router.get("/token")
-async def get_token(token: str = Depends(oauth2_scheme)):
-    try:
-        payload = jwt.decode(token, os.environ["GOOGLE_CLIENT_SECRET"], algorithms=["HS256"])
-        return payload
-    except JWTError as e:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    user_data = user_info.json()
+    encoded_user_data = urllib.parse.quote_plus(str(user_data))
+
+    return RedirectResponse(f"/login/finalize?data={encoded_user_data}")
+
+    # this says RuntimeError: app.storage.user can only be used within a UI context
+    # if not app.storage.user["url_before_login"]:
+    #     app.storage.user["url_before_login"] = "/"
+    # ui.redirect(app.storage.browser["url_before_login"])
+    return user_info.json()  # dict

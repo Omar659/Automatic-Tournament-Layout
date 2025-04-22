@@ -1,7 +1,9 @@
-import os
-import httpx
+import json
+import ast
 from fastapi import Form, HTTPException
 from fastapi.responses import RedirectResponse
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 from nicegui import ui, app
 
 from ..routers.auth import login_with_google
@@ -45,30 +47,38 @@ class PlayerSelectionWidget():
 
 class Header():
 
-    @ui.refreshable_method
     async def build(self):
-        user_data = app.storage.user.get('user_data', None)
-        if not user_data:
-            ui.add_head_html('<script src="https://accounts.google.com/gsi/client" async defer></script>')
-            ui.button('Login with Google', on_click=self.login)
-        else:
-            ui.label(f'Welcome {user_data["name"]}!')
-            ui.button('Logout', on_click=self.logout)
-    
-    async def logout(self) -> None:
+        with ui.header(elevated=True).style('background-color: #3874c8').classes('items-center justify-between'):
+            with ui.row(align_items="center"):
+                ui.label("Automatic Tournament Layout".upper())
+            with ui.row(align_items="center"):
+                # retrieves user data
+                # if "user_data" in app.storage.user:
+                #     del app.storage.user["user_data"]
+                user_data = app.storage.user.get("user_data", None)
+                # if there is user data...
+                if user_data:
+                    with ui.avatar():
+                        ui.image(user_data["picture"])
+                    ui.label(user_data["given_name"])
+                    ui.button("Logout", on_click=self.logout)
+                # if there is no user data...
+                else:
+                    ui.button("Login", on_click=self.login)
+
+    def logout(self) -> None:
+        # deletes saved data
         del app.storage.user['user_data']
-        await self.build.refresh()
+        # navigates again to the current url
+        url = str(ui.context.client.request.url)
+        ui.navigate.to(url)
 
     async def login(self):
-        
+        # saves current url
+        app.storage.user["url_before_login"] = str(ui.context.client.request.url)
+        # gets the url to do the login
         login_url = (await login_with_google())["url"]
         ui.navigate.to(login_url)
-        # async with httpx.AsyncClient() as http_client:
-        #     response = await http_client.get(f'https://oauth2.googleapis.com/tokeninfo?id_token={credential}')
-        # if response.status_code != 200:
-        #     raise HTTPException(status_code=400, detail='Invalid token')
-        # app.storage.user['user_data'] = response.json()
-        # return RedirectResponse('/', status_code=303)
 
 @ui.page("/")
 async def home():
@@ -77,3 +87,15 @@ async def home():
 
     player_selection_widget = PlayerSelectionWidget()
     await player_selection_widget.build()
+
+
+@ui.page("/login/finalize")
+async def login_finalize():
+    # gets current url
+    url = str(ui.context.client.request.url)
+    # parses user data from current url
+    user_data = parse_qs(urlparse(url).query)["data"][0]
+    user_data = ast.literal_eval(user_data)
+    # saves user's infos into storage
+    app.storage.user["user_data"] = user_data
+    ui.navigate.to(app.storage.user["url_before_login"])
