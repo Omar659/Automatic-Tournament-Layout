@@ -1,17 +1,44 @@
 from nicegui import ui, app
 
+from .routers.auth import login_with_google
+
 from .db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
-class Header:
+class Header():
 
-    def __init__(self):
-        self.build()
+    async def build(self):
+        # del app.storage.user['user_data']
+        with ui.header(elevated=True).style('background-color: #3874c8').classes('items-center justify-between'):
+            with ui.row(align_items="center"):
+                ui.button("Automatic Tournament Layout Home".upper(), on_click=lambda: ui.navigate.to("/"))
+            with ui.row(align_items="center"):
+                # retrieves user data
+                # if "user_data" in app.storage.user:
+                #     del app.storage.user["user_data"]
+                user_data = app.storage.user.get("user_data", None)
+                # if there is user data...
+                if user_data:
+                    with ui.avatar():
+                        ui.image(user_data["picture"])
+                    ui.label(user_data["given_name"])
+                    ui.button("Logout", on_click=self.logout)
+                # if there is no user data...
+                else:
+                    ui.button("Login", on_click=self.login)
 
-    def build(self):
-        with ui.header(elevated=True).style("background-color: #3874c8").classes(
-            "items-center justify-between"
-        ):
-            ui.label("Automatic Tournament Layout".upper())
+    async def login(self):
+        # saves current url
+        app.storage.user["url_before_login"] = str(ui.context.client.request.url)
+        # gets the url to do the login
+        login_url = (await login_with_google())["url"]
+        ui.navigate.to(login_url)
+
+    def logout(self) -> None:
+        # deletes saved data
+        del app.storage.user['user_data']
+        # navigates again to the current url
+        url = str(ui.context.client.request.url)
+        ui.navigate.to(url)
 
 
 class Footer:

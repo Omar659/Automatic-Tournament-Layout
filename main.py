@@ -21,7 +21,7 @@ for router_file in [players, games, tournaments, auth]:
 
 # initialize NiceGUI
 from nicegui import app as nicegui_app, ui
-from .pages import index
+from .pages import index, create_tournament
 ui.run_with(
     fastapi_app,
     storage_secret="pick your private secret here",  # NOTE setting a secret is optional but allows for persistent storage per user
