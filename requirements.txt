@@ -1,6 +1,10 @@
 python-dotenv
+authlib
 pydantic
+requests
 fastapi[standard]
 uvicorn[standard]
+python-jose[cryptography]
+python-multipart
 pymongo[srv]
 nicegui

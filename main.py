@@ -15,9 +15,9 @@ db = mongo_client["Storage"]
 from fastapi import FastAPI
 
 fastapi_app = FastAPI()
-from .routers import players, games, tournaments
-for router_file in [players, games, tournaments]:
-    fastapi_app.include_router(router=router_file.router, prefix="/api")
+from .routers import players, games, tournaments, auth
+for router_file in [players, games, tournaments, auth]:
+    fastapi_app.include_router(router=router_file.router)
 
 # initialize NiceGUI
 from nicegui import app as nicegui_app, ui
