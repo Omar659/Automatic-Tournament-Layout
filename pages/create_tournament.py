@@ -30,13 +30,15 @@ class CreateTournamentCard():
             ui.select(options=["Group tournament"], value="Group tournament")
 
             ui.label("Players").classes("text-xl")
-            ui.select(
-                options={p.id: p.name for p in self.all_players},
-                label="Search and add player...",
-                with_input=True,
-                on_change=self.add_player,
-                clearable=True,
-            ).classes("w-full mb-2")
+            with ui.row():
+                ui.select(
+                    options={p.id: p.name for p in self.all_players},
+                    label="Search and add player...",
+                    with_input=True,
+                    on_change=self.add_player,
+                    clearable=True,
+                ).classes("mb-2")
+                ui.button("Add player")
             if not "selected_players" in app.storage.user:
                 ui.label("No players selected")
             else:
