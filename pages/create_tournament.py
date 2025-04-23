@@ -92,8 +92,8 @@ class PlayerSelectionWidget():
 
 @ui.page("/tournaments/create")
 async def home():
-    # header = Header()
-    # await header.build()
+    header = Header()
+    await header.build()
 
     create_tournament_card = CreateTournamentCard()
     await create_tournament_card.build()

@@ -17,3 +17,11 @@ class GameSkill(BaseModel):
 
 class Player(Entity):
     skills: List[GameSkill] = []
+
+class GoogleUserData(BaseModel):
+    id: str
+    email: str
+    name: str = None
+    given_name: str = None
+    family_name: str = None
+    picture: str = None
