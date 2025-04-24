@@ -20,6 +20,7 @@ class HomeCard():
     async def build(self):
         with ui.card().classes("fixed-center"):
             ui.button("Create tournament", on_click=lambda: ui.navigate.to("/tournaments/create")).bind_enabled(app.storage.user, "user_data")
+            ui.button("Players DB", on_click=lambda: ui.navigate.to("/players"))
 
 
 # class PlayerSelectionWidget():

@@ -18,8 +18,8 @@ class CreateTournamentCard():
 
     @ui.refreshable_method
     async def build(self):
-        await self.update_current_players()
-        # app.storage.user["selected_players"] = {}
+        self.all_players = await get_all()
+
         with ui.card().classes("fixed-center"):
             ui.label("Create tournament").classes("text-xl")
 
@@ -43,13 +43,13 @@ class CreateTournamentCard():
                 ui.label("No players selected")
             else:
                 for selected_player_id in app.storage.user["selected_players"]:
-                    with ui.row(align_items="start"):
-                        player = Player(**app.storage.user["selected_players"][selected_player_id])
-                        ui.label(player.name)
-                        ui.button("Delete", on_click=lambda x=selected_player_id: self.delete_player(x))
-
-    async def update_current_players(self):
-        self.all_players = await get_all()
+                    if selected_player_id not in {p.id for p in self.all_players}:
+                        del app.storage.user["selected_players"][selected_player_id]
+                    else:
+                        with ui.row(align_items="start"):
+                            player = Player(**app.storage.user["selected_players"][selected_player_id])
+                            ui.label(player.name)
+                            ui.button("Delete", on_click=lambda x=selected_player_id: self.delete_player(x))
 
     async def delete_player(self, player_id):
         if player_id in app.storage.user["selected_players"]:
