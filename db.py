@@ -2,10 +2,10 @@ from nicegui import ui
 
 from .models import Player
 
-def add_player_to_db(client, player_name):
+def add_player_to_db(client, player_name, owner_id):
     db = client["Storage"]
     collection = db["Players"]
-    player_obj = Player(name=player_name)
+    player_obj = Player(name=player_name, owner_id=owner_id)
     player_obj.id = collection.insert_one(player_obj.model_dump()).inserted_id
     return player_obj
 

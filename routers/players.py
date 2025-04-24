@@ -33,13 +33,13 @@ async def get_one(id: str | None = None, name: str | None = None) -> Optional[Pl
 
 
 @router.get("/add_one")
-async def add_one(name: str) -> Player:
+async def add_one(name: str, owner_id: str) -> Player:
     collection = db["Players"]
     # check if a player with that name already exists
     if await get_one(name=name):
         raise HTTPException(status_code=404, detail="A player with this name already exists")
     # creates the Player object
-    player_obj = Player(id=str(uuid4()), name=name)
+    player_obj = Player(id=str(uuid4()), name=name, owner_id=owner_id)
     # adds it to the DB
     collection.insert_one(player_obj.model_dump())
     return player_obj

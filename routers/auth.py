@@ -5,11 +5,14 @@ from fastapi.responses import RedirectResponse
 import requests
 from fastapi import APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from uuid import uuid4
 from nicegui import app, ui
+
+from ..models import GoogleUserData, User
+from ..main import db
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-# Step 1: Generate Google OAuth2 login URL
 @router.get("/login_with_google")
 async def login_with_google():
     redirect_uri = os.environ["GOOGLE_REDIRECT_URI"]
@@ -26,7 +29,6 @@ async def login_with_google():
         )
     }
 
-# Step 2: Handle redirect from Google with ?code=
 @router.get("/callback")
 async def auth_google(code: str):
     token_url = "https://oauth2.googleapis.com/token"
@@ -60,3 +62,34 @@ async def auth_google(code: str):
     encoded_user_data = urllib.parse.quote_plus(str(user_data))
 
     return RedirectResponse(f"/login/finalize?data={encoded_user_data}")
+
+
+@router.get("/add")
+async def add_user(
+    id: str, 
+    name: str = None, 
+    google_user_data: GoogleUserData = None
+) -> User:
+    if not name:
+        assert isinstance(google_user_data, GoogleUserData)
+        name = google_user_data.name
+    collection = db["Users"]
+    # check if a user with that id already exists
+    user = await get_user(id=id)
+    if not user:
+        # creates the User object
+        user = User(id=str(uuid4()), name=name, google_user_data=google_user_data)
+        # adds it to the DB
+        collection.insert_one(user.model_dump())
+    return user
+
+
+@router.get("/get")
+async def get_user(id: str) -> User | None:
+    collection = db["Users"]
+    user = collection.find_one({"id": id})
+    if user:
+        user = User(**user)
+    else:
+        user = None
+    return user

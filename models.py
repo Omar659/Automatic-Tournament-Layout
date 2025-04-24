@@ -8,15 +8,6 @@ class Entity(BaseModel):
     id: str
     name: str
 
-class Game(Entity):
-    pass
-
-class GameSkill(BaseModel):
-    game: Game
-    level: SkillLevel
-
-class Player(Entity):
-    skills: List[GameSkill] = []
 
 class GoogleUserData(BaseModel):
     id: str
@@ -25,3 +16,18 @@ class GoogleUserData(BaseModel):
     given_name: str = None
     family_name: str = None
     picture: str = None
+
+
+class Game(Entity):
+    pass
+
+class GameSkill(BaseModel):
+    game: Game
+    level: SkillLevel
+
+class Player(Entity):
+    owner_id: str = None
+    skills: List[GameSkill] = []
+
+class User(Entity):
+    google_user_data: GoogleUserData = None

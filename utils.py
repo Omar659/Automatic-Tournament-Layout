@@ -1,14 +1,14 @@
 from nicegui import ui, app
 from pydantic import ValidationError
 
-from .models import GoogleUserData
+from .models import User
 
-def get_user_data():
-    user_data = app.storage.user.get("user_data", None)
-    if user_data is not None and not isinstance(user_data, dict):
+def get_user() -> User | None:
+    user_data = app.storage.user.get("user", None)
+    if user_data is not None:
         try:
-            user_data = GoogleUserData()
+            user_data = User(**user_data)
         except ValidationError as e:
-            del app.storage.user["user_data"]
+            del app.storage.user["user"]
             return None
     return user_data

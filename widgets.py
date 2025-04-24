@@ -1,36 +1,40 @@
 from nicegui import ui, app
 
-from .utils import get_user_data
+from .models import User
+
+from .utils import get_user
 
 from .routers.auth import login_with_google
 
 from .db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
 class Header():
-    
+
     async def build(self):
-        # del app.storage.user['user_data']
+        # del app.storage.user["user"]
         with ui.header(elevated=True).style('background-color: #3874c8').classes('items-center justify-between'):
             with ui.row(align_items="center"):
-                ui.button("Automatic Tournament Layout Home".upper(), on_click=lambda: ui.navigate.to("/"))
+                ui.button("Automatic Tournament Layout".upper(), icon="home", on_click=lambda: ui.navigate.to("/"))
             with ui.row(align_items="center"):
                 # retrieves user data
                 # if "user_data" in app.storage.user:
                 #     del app.storage.user["user_data"]
                 # user_data = app.storage.user.get("user_data", None)
                 # validate user data
-                user_data = get_user_data()
+                user: User = get_user()
                 # if there is user data...
-                if isinstance(user_data, dict):
-                    if "picture" in user_data:
-                        with ui.avatar():
-                            ui.image(user_data["picture"])
-                    if "given_name" in user_data:
-                        ui.label(user_data["given_name"])
-                    ui.button("Logout", on_click=self.logout)
+                if isinstance(user, User):
+                    with ui.dropdown_button(
+                        text=user.name, icon="account_circle", auto_close=True
+                    ):
+                        # if user.google_user_data:
+                        #     if user.google_user_data.picture:
+                        #         with ui.avatar():
+                        #             ui.image(user.google_user_data.picture)
+                        ui.item("Logout", on_click=self.logout)
                 # if there is no user data...
                 else:
-                    ui.button("Login", on_click=self.login)
+                    ui.button("Login", icon="login", on_click=self.login)
 
     async def login(self):
         # saves current url
@@ -41,7 +45,7 @@ class Header():
 
     def logout(self) -> None:
         # deletes saved data
-        del app.storage.user['user_data']
+        del app.storage.user['user']
         # navigates again to the current url
         url = str(ui.context.client.request.url)
         ui.navigate.to(url)

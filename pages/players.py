@@ -30,14 +30,14 @@ class PlayersCard():
             else:
                 for player in self.all_players:
                     with ui.row():
-                        ui.label(text=f"Player {player.name}")
-                        ui.button(text=f"Delete", on_click=lambda p=player: self.delete_player_dialog(p))
+                        ui.button(text=f"Player {player.name}", on_click=lambda: ui.navigate.to(f"/players/{player.id}"))
+                        # ui.button(text=f"Delete", on_click=lambda p=player: self.delete_player_dialog(p))
     
     async def add_player_dialog(self):
         with ui.dialog() as dialog, ui.card():
             async def yes():
                 name = name_input.value
-                await add_one(name=name)
+                await add_one(name=name, owner_id=app.storage.user["user_data"]["id"])
                 ui.notify(f"Created {name} in the DB")
                 self.build.refresh()
                 dialog.close()
@@ -62,10 +62,10 @@ class PlayersCard():
                 ui.button('Yes', on_click=yes)
                 ui.button('No', on_click=dialog.close)
             dialog.open()
-        
+
 
 @ui.page("/players")
-async def home():
+async def players():
     header = Header()
     await header.build()
 
