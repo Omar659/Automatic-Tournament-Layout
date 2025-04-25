@@ -20,12 +20,12 @@ class Header():
                 # if "user_data" in app.storage.user:
                 #     del app.storage.user["user_data"]
                 # user_data = app.storage.user.get("user_data", None)
-                # validate user data
-                user: User = get_current_user()
                 # if there is user data...
-                if isinstance(user, User):
+                if isinstance(get_current_user(), User):
                     with ui.dropdown_button(
-                        text=user.name, icon="account_circle", auto_close=True
+                        text=get_current_user().name,
+                        icon="account_circle",
+                        auto_close=True,
                     ):
                         # if user.google_user_data:
                         #     if user.google_user_data.picture:

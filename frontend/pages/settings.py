@@ -8,13 +8,13 @@ from urllib.parse import parse_qs
 from nicegui import ui, app
 
 from ...main import MIN_NAME_LENGTH, MAX_NAME_LENGTH, LEGAL_CHARACTERS_RE
-from ..utils import get_current_user, set_current_user
+from ..utils import get_current_user, logout, set_current_user
 
 from ...backend.models import User
 
 from ..widgets import Header
 
-from ...backend.apis.auth import change_name, login_with_google
+from ...backend.apis.auth import change_user_name, delete_user, login_with_google
 from ...backend.apis.players import get_one
 
 
@@ -37,6 +37,7 @@ class SettingsCard:
             if get_current_user().google_user_data:
                 ui.label(f"Skills").classes("text-xl")
                 ui.label("TODO")
+            ui.button("Delete user", icon="delete", color="red", on_click=self.delete_user_dialog)
 
     async def change_user_name_dialog(self):
         with ui.dialog() as dialog, ui.card():
@@ -44,7 +45,7 @@ class SettingsCard:
             async def yes():
                 name = name_input.value
                 try:
-                    user = await change_name(id=get_current_user().id, new_name=name)
+                    user = await change_user_name(id=get_current_user().id, new_name=name)
                     set_current_user(user=user)
                     ui.notify(f"Changed name to {name} in the DB")
                     self.build.refresh()
@@ -64,6 +65,35 @@ class SettingsCard:
                 )
             with ui.row():
                 ui.button("Done", on_click=yes).bind_enabled_from(target_object=name_input, target_name="error", backward=lambda x: not x)
+                ui.button("Cancel", on_click=dialog.close)
+            dialog.open()
+
+    async def delete_user_dialog(self):
+        with ui.dialog() as dialog, ui.card():
+
+            async def yes():
+                try:
+                    await delete_user(id=get_current_user().id)
+                    logout()
+                except HTTPException as e:
+                    ui.notify(e)
+
+            with ui.row():
+                ui.label(f"You're about to delete your user from the DB")
+                ui.label(f"Please type your current user name '{get_current_user().name}' to confirm")
+                name_input = ui.input(
+                    label="Current user name",
+                    validation={
+                        "Not matching": lambda x: x == get_current_user().name,
+                    },
+                )
+                name_input.error = "Input your user name"
+            with ui.row():
+                ui.button("Delete", icon="delete", color="red", on_click=yes).bind_enabled_from(
+                    target_object=name_input,
+                    target_name="error",
+                    backward=lambda x: not x,
+                )
                 ui.button("Cancel", on_click=dialog.close)
             dialog.open()
 

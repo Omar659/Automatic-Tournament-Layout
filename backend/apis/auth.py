@@ -1,6 +1,7 @@
 import hashlib
 import os
 import re
+from typing import Final
 from fastapi.responses import RedirectResponse
 import requests
 from fastapi import APIRouter, HTTPException
@@ -8,6 +9,7 @@ from fastapi import APIRouter, HTTPException
 from ..models import GoogleUserData, User
 from ...main import db, LEGAL_CHARACTERS_RE
 
+COLLECTION: Final[str] = "users"
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.get("/login_with_google")
@@ -69,7 +71,6 @@ async def add_user(
     if not name:
         assert isinstance(google_user_data, GoogleUserData)
         name = google_user_data.name
-    collection = db["Users"]
     # generates an id for the user which is always the same, based on Google's ID
     sha512 = hashlib.sha512(os.environ["HASH_INIT"].encode())
     sha512.update(google_user_data.id.encode())
@@ -80,13 +81,12 @@ async def add_user(
         # creates the User object
         user = User(id=user_id, name=name, google_user_data=google_user_data)
         # adds it to the DB
-        collection.insert_one(user.model_dump())
+        COLLECTION.insert_one(user.model_dump())
     return user
 
 
 @router.get("/get")
 async def get_user(id: str | None = None, name: str | None = None) -> User | None:
-    collection = db["Users"]
     if not any([id, name]):
         raise HTTPException(status_code=404, detail="No parameters were given")
     query = []
@@ -94,7 +94,7 @@ async def get_user(id: str | None = None, name: str | None = None) -> User | Non
         query.append({"id": id})
     if name:
         query.append({"name": name})
-    user = collection.find_one({"$or": query})
+    user = COLLECTION.find_one({"$or": query})
     if user:
         user = User(**user)
     else:
@@ -102,8 +102,20 @@ async def get_user(id: str | None = None, name: str | None = None) -> User | Non
     return user
 
 
+@router.get("/delete")
+async def delete_user(id: str | None = None, name: str | None = None) -> User | None:
+    if not any([id, name]):
+        raise HTTPException(status_code=404, detail="No parameters were given")
+    query = []
+    if id:
+        query.append({"id": id})
+    if name:
+        query.append({"name": name})
+    COLLECTION.delete_one({"$or": query})
+
+
 @router.get("/change_name")
-async def change_name(id: str, new_name: str) -> User | None:
+async def change_user_name(id: str, new_name: str) -> User | None:
     # checks if the new name is valid
     if not re.fullmatch(LEGAL_CHARACTERS_RE, new_name):
         raise HTTPException(status_code=404, detail="New name contains invalid characters, or is too short or too long")
@@ -112,8 +124,7 @@ async def change_name(id: str, new_name: str) -> User | None:
     if user_with_same_name:
          raise HTTPException(status_code=404, detail="There already is a user with same name")
     # if all controls have passed, proceed with name change
-    collection = db["Users"]
-    collection.update_one(
+    COLLECTION.update_one(
         filter={"id": id},
         update={
             "$set": {

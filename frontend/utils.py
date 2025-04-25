@@ -19,3 +19,7 @@ def get_current_user() -> User | None:
             del app.storage.user["user"]
             return None
     return user_data
+
+def logout():
+    set_current_user(user=None)
+    ui.navigate.to("/")
