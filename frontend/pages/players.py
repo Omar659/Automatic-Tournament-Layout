@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ...main import LEGAL_CHARACTERS_RE
+from ...main import LEGAL_CHARACTERS_RE, NAMES_VALIDATION_RE
 
 from ...backend.models import Player, User
 from ..frontend_utils import get_current_user
@@ -16,7 +16,7 @@ from ..frontend_utils import get_current_user
 from ..widgets import Header
 
 from ...backend.apis.auth import login_with_google
-from ...backend.apis.players import get_all, add_player
+from ...backend.apis.players import delete_player, get_all, add_player
 
 class PlayersCard():
 
@@ -37,7 +37,7 @@ class PlayersCard():
             else:
                 with ui.list().props("dense separator"):
                     for player in self.all_players:
-                        ui.item(text=f"Player {player.name}", on_click=lambda: ui.navigate.to(f"/players/{player.id}"))
+                        ui.item(text=f"Player {player.name}", on_click=lambda x=player: ui.navigate.to(f"/players/{x.id}"))
                         # ui.button(text=f"Delete", on_click=lambda p=player: self.delete_player_dialog(p))
 
     async def add_player_dialog(self):
@@ -59,7 +59,7 @@ class PlayersCard():
                         "Too short": lambda x: len(x) >= 4,
                         "Too long": lambda x: len(x) <= 32,
                         "Invalid characters": lambda x: re.fullmatch(
-                            LEGAL_CHARACTERS_RE, x
+                            NAMES_VALIDATION_RE, x
                         ),
                     },
                 )
@@ -76,7 +76,7 @@ class PlayersCard():
     async def delete_player_dialog(self, player):
         with ui.dialog() as dialog, ui.card():
             async def yes():
-                await delete_one(player_id=player.id)
+                await delete_player(player_id=player.id)
                 ui.notify(f"Deleted {player.name} from the DB")
                 self.build.refresh()
                 dialog.close()

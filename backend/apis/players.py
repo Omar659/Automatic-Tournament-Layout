@@ -20,6 +20,11 @@ async def get_all(owner_id: str | None = None) -> List[Player]:
     return [Player(**x) for x in COLLECTION.find(query)]
 
 
+@router.get("/search")
+async def search_players(name: str, limit=8) -> List[Player]:
+    query = {"name": {"$regex": name, "$options": "i"}}
+    return [Player(**x) for x in COLLECTION.find(query, batch_size=limit)]
+
 @router.get("/get")
 async def get_player(id: str | None = None, name: str | None = None) -> Optional[Player]:
     # raise an error if no parameters are provided
