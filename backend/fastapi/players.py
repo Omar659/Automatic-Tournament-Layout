@@ -2,7 +2,7 @@ import requests
 from typing import List, Optional
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException
-from ..main import db
+from ...main import db
 from ..models import Player
 
 router = APIRouter(prefix="/players", tags=["players"])

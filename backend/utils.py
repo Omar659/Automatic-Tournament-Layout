@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from .models import User
 
-def get_user() -> User | None:
+def get_current_user() -> User | None:
     user_data = app.storage.user.get("user", None)
     if user_data is not None:
         try:

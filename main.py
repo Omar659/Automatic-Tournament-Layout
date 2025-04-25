@@ -15,13 +15,13 @@ db = mongo_client["Storage"]
 from fastapi import FastAPI
 
 fastapi_app = FastAPI()
-from .routers import players, games, tournaments, auth
+from .backend.fastapi import players, games, tournaments, auth
 for router_file in [players, games, tournaments, auth]:
     fastapi_app.include_router(router=router_file.router)
 
 # initialize NiceGUI
 from nicegui import app as nicegui_app, ui
-from .pages import index, create_tournament, players, player_page
+from .frontend import index, create_tournament, players, player_page, settings
 ui.run_with(
     fastapi_app,
     storage_secret="pick your private secret here",  # NOTE setting a secret is optional but allows for persistent storage per user

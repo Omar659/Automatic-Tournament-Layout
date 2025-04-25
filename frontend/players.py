@@ -1,15 +1,19 @@
 import json
 import ast
+from typing import List
 from fastapi import Form, HTTPException
 from fastapi.responses import RedirectResponse
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ..widgets import Header
+from ..backend.models import Player, User
+from ..backend.utils import get_current_user
 
-from ..routers.auth import login_with_google
-from ..routers.players import get_all, add_one, delete_one
+from .widgets import Header
+
+from ..backend.fastapi.auth import login_with_google
+from ..backend.fastapi.players import get_all, add_one, delete_one
 
 class PlayersCard():
 
@@ -20,7 +24,8 @@ class PlayersCard():
 
     @ui.refreshable_method
     async def build(self):
-        self.all_players = await get_all()
+        self.user = get_current_user()
+        self.all_players: List[Player] = await get_all()
 
         with ui.card().classes("fixed-center"):
             ui.label(f"List of players").classes("text-xl")
@@ -28,16 +33,16 @@ class PlayersCard():
             if not self.all_players:
                 ui.label(f"Wow, such empty")
             else:
-                for player in self.all_players:
-                    with ui.row():
-                        ui.button(text=f"Player {player.name}", on_click=lambda: ui.navigate.to(f"/players/{player.id}"))
+                with ui.list().props("dense separator"):
+                    for player in self.all_players:
+                        ui.item(text=f"Player {player.name}", on_click=lambda: ui.navigate.to(f"/players/{player.id}"))
                         # ui.button(text=f"Delete", on_click=lambda p=player: self.delete_player_dialog(p))
-    
+
     async def add_player_dialog(self):
         with ui.dialog() as dialog, ui.card():
             async def yes():
                 name = name_input.value
-                await add_one(name=name, owner_id=app.storage.user["user_data"]["id"])
+                await add_one(name=name, owner_id=self.user.id)
                 ui.notify(f"Created {name} in the DB")
                 self.build.refresh()
                 dialog.close()

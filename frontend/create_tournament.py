@@ -6,11 +6,11 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ..models import Player
+from ..backend.models import Player
 
-from ..widgets import Header
-from ..routers.auth import login_with_google
-from ..routers.players import get_all
+from .widgets import Header
+from ..backend.fastapi.auth import login_with_google
+from ..backend.fastapi.players import get_all
 
 class CreateTournamentCard():
 
@@ -73,7 +73,6 @@ class CreateTournamentCard():
         self.build.refresh()
 
 
-
 class PlayerSelectionWidget():
 
     current_players = []
@@ -84,11 +83,7 @@ class PlayerSelectionWidget():
     @ui.refreshable_method
     async def build(self):
         await self.update_current_players()
-        
 
-    
-
-    
 
 @ui.page("/tournaments/create")
 async def home():

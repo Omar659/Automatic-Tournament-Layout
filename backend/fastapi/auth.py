@@ -9,7 +9,7 @@ from uuid import uuid4
 from nicegui import app, ui
 
 from ..models import GoogleUserData, User
-from ..main import db
+from ...main import db
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

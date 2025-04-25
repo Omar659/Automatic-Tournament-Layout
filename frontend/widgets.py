@@ -1,12 +1,12 @@
 from nicegui import ui, app
 
-from .models import User
+from ..backend.models import User
 
-from .utils import get_user
+from ..backend.utils import get_current_user
 
-from .routers.auth import login_with_google
+from ..backend.fastapi.auth import login_with_google
 
-from .db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
+from ..backend.db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
 class Header():
 
@@ -21,7 +21,7 @@ class Header():
                 #     del app.storage.user["user_data"]
                 # user_data = app.storage.user.get("user_data", None)
                 # validate user data
-                user: User = get_user()
+                user: User = get_current_user()
                 # if there is user data...
                 if isinstance(user, User):
                     with ui.dropdown_button(
@@ -31,6 +31,7 @@ class Header():
                         #     if user.google_user_data.picture:
                         #         with ui.avatar():
                         #             ui.image(user.google_user_data.picture)
+                        ui.item("Settings", on_click=lambda: ui.navigate.to("/settings"))
                         ui.item("Logout", on_click=self.logout)
                 # if there is no user data...
                 else:

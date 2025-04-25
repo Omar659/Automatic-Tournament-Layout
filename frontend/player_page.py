@@ -6,12 +6,12 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ..models import Player
+from ..backend.models import Player
 
-from ..widgets import Header
+from .widgets import Header
 
-from ..routers.auth import login_with_google
-from ..routers.players import get_one
+from ..backend.fastapi.auth import login_with_google
+from ..backend.fastapi.players import get_one
 
 
 class PlayerCard:
