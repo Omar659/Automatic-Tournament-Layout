@@ -1,10 +1,14 @@
 import json
 import ast
+import os
 from fastapi import Form, HTTPException
 from fastapi.responses import RedirectResponse
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
+import hashlib
 from nicegui import ui, app
+
+from ..utils import set_current_user
 
 from ...backend.models import GoogleUserData
 
@@ -39,10 +43,8 @@ async def login_finalize():
     user_data = ast.literal_eval(user_data)
     # for now, just the login with Google is supported
     google_user_data = GoogleUserData(**user_data)
-    # generates an id for the user which is always the same, based on Google's ID
-    user_id = str(hash(google_user_data.id))[:16].zfill(16)
     # eventually adds the user to the DB
-    user = await add_user(id=user_id, google_user_data=google_user_data)
+    user = await add_user(google_user_data=google_user_data)
     # saves user's infos into storage
-    app.storage.user["user"] = user.model_dump()
+    set_current_user(user=user)
     ui.navigate.to(app.storage.user["url_before_login"])

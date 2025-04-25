@@ -1,15 +1,12 @@
-# auth_google.py
-
+import hashlib
 import os
+import re
 from fastapi.responses import RedirectResponse
 import requests
 from fastapi import APIRouter, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from uuid import uuid4
-from nicegui import app, ui
 
 from ..models import GoogleUserData, User
-from ...main import db
+from ...main import db, LEGAL_CHARACTERS_RE
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -66,7 +63,6 @@ async def auth_google(code: str):
 
 @router.get("/add")
 async def add_user(
-    id: str, 
     name: str = None, 
     google_user_data: GoogleUserData = None
 ) -> User:
@@ -74,22 +70,55 @@ async def add_user(
         assert isinstance(google_user_data, GoogleUserData)
         name = google_user_data.name
     collection = db["Users"]
+    # generates an id for the user which is always the same, based on Google's ID
+    sha512 = hashlib.sha512(os.environ["HASH_INIT"].encode())
+    sha512.update(google_user_data.id.encode())
+    user_id = sha512.hexdigest()[:32].zfill(32)
     # check if a user with that id already exists
-    user = await get_user(id=id)
+    user = await get_user(id=user_id)
     if not user:
         # creates the User object
-        user = User(id=str(uuid4()), name=name, google_user_data=google_user_data)
+        user = User(id=user_id, name=name, google_user_data=google_user_data)
         # adds it to the DB
         collection.insert_one(user.model_dump())
     return user
 
 
 @router.get("/get")
-async def get_user(id: str) -> User | None:
+async def get_user(id: str | None = None, name: str | None = None) -> User | None:
     collection = db["Users"]
-    user = collection.find_one({"id": id})
+    if not any([id, name]):
+        raise HTTPException(status_code=404, detail="No parameters were given")
+    query = []
+    if id:
+        query.append({"id": id})
+    if name:
+        query.append({"name": name})
+    user = collection.find_one({"$or": query})
     if user:
         user = User(**user)
     else:
         user = None
     return user
+
+
+@router.get("/change_name")
+async def change_name(id: str, new_name: str) -> User | None:
+    # checks if the new name is valid
+    if not re.fullmatch(LEGAL_CHARACTERS_RE, new_name):
+        raise HTTPException(status_code=404, detail="New name contains invalid characters, or is too short or too long")
+    # if the name is valid, check that there are no other users with the same name
+    user_with_same_name = await get_user(name=new_name)
+    if user_with_same_name:
+         raise HTTPException(status_code=404, detail="There already is a user with same name")
+    # if all controls have passed, proceed with name change
+    collection = db["Users"]
+    collection.update_one(
+        filter={"id": id},
+        update={
+            "$set": {
+                "name": new_name,
+            }
+        }
+    )
+    return await get_user(id=id)

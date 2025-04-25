@@ -2,6 +2,11 @@
 import os
 from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
+from typing import Final
+
+MIN_NAME_LENGTH: Final[int] = 4
+MAX_NAME_LENGTH: Final[int] = 32
+LEGAL_CHARACTERS_RE: Final[str] = r"^[a-zA-Z0-9\ \-_@#&?!+=]{4,32}$"
 
 load_dotenv(".env")
 mongo_client = MongoClient(

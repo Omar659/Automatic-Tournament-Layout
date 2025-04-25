@@ -8,7 +8,7 @@ from urllib.parse import parse_qs
 from nicegui import ui, app
 
 from ...backend.models import Player, User
-from ...backend.utils import get_current_user
+from ..utils import get_current_user
 
 from ..widgets import Header
 

@@ -2,7 +2,7 @@ from nicegui import ui, app
 
 from ..backend.models import User
 
-from ..backend.utils import get_current_user
+from .utils import get_current_user
 
 from ..backend.apis.auth import login_with_google
 
