@@ -6,10 +6,12 @@ from fastapi.responses import RedirectResponse
 import requests
 from fastapi import APIRouter, HTTPException
 
+from ..backend_utils import generate_id
+
 from ..models import GoogleUserData, User
 from ...main import db, LEGAL_CHARACTERS_RE
 
-COLLECTION: Final[str] = "users"
+COLLECTION: Final[str] = db["users"]
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.get("/login_with_google")
@@ -72,9 +74,7 @@ async def add_user(
         assert isinstance(google_user_data, GoogleUserData)
         name = google_user_data.name
     # generates an id for the user which is always the same, based on Google's ID
-    sha512 = hashlib.sha512(os.environ["HASH_INIT"].encode())
-    sha512.update(google_user_data.id.encode())
-    user_id = sha512.hexdigest()[:32].zfill(32)
+    user_id = generate_id(key=os.environ["HASH_INIT"], init=google_user_data.id)
     # check if a user with that id already exists
     user = await get_user(id=user_id)
     if not user:

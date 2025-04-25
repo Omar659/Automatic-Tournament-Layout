@@ -8,7 +8,7 @@ from urllib.parse import parse_qs
 import hashlib
 from nicegui import ui, app
 
-from ..utils import set_current_user
+from ..frontend_utils import set_current_user
 
 from ...backend.models import GoogleUserData
 
@@ -23,7 +23,7 @@ class HomeCard():
     async def build(self):
         with ui.card().classes("fixed-center"):
             ui.button("Create tournament", on_click=lambda: ui.navigate.to("/tournaments/create")).bind_enabled(app.storage.user, "user_data")
-            ui.button("Players DB", on_click=lambda: ui.navigate.to("/players"))
+            ui.button("Your players", on_click=lambda: ui.navigate.to("/players"))
 
 @ui.page("/")
 async def home():

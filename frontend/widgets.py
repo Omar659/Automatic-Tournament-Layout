@@ -2,7 +2,7 @@ from nicegui import ui, app
 
 from ..backend.models import User
 
-from .utils import get_current_user
+from .frontend_utils import get_current_user
 
 from ..backend.apis.auth import login_with_google
 
@@ -16,10 +16,6 @@ class Header():
             with ui.row(align_items="center"):
                 ui.button("Automatic Tournament Layout".upper(), icon="home", on_click=lambda: ui.navigate.to("/"))
             with ui.row(align_items="center"):
-                # retrieves user data
-                # if "user_data" in app.storage.user:
-                #     del app.storage.user["user_data"]
-                # user_data = app.storage.user.get("user_data", None)
                 # if there is user data...
                 if isinstance(get_current_user(), User):
                     with ui.dropdown_button(

@@ -1,5 +1,6 @@
 import json
 import ast
+import re
 from typing import List
 from fastapi import Form, HTTPException
 from fastapi.responses import RedirectResponse
@@ -7,13 +8,15 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
+from ...main import LEGAL_CHARACTERS_RE
+
 from ...backend.models import Player, User
-from ..utils import get_current_user
+from ..frontend_utils import get_current_user
 
 from ..widgets import Header
 
 from ...backend.apis.auth import login_with_google
-from ...backend.apis.players import get_all, add_one, delete_one
+from ...backend.apis.players import get_all, add_player
 
 class PlayersCard():
 
@@ -24,8 +27,7 @@ class PlayersCard():
 
     @ui.refreshable_method
     async def build(self):
-        self.user = get_current_user()
-        self.all_players: List[Player] = await get_all()
+        self.all_players: List[Player] = await get_all(owner_id=get_current_user().id)
 
         with ui.card().classes("fixed-center"):
             ui.label(f"List of players").classes("text-xl")
@@ -41,17 +43,34 @@ class PlayersCard():
     async def add_player_dialog(self):
         with ui.dialog() as dialog, ui.card():
             async def yes():
-                name = name_input.value
-                await add_one(name=name, owner_id=self.user.id)
-                ui.notify(f"Created {name} in the DB")
-                self.build.refresh()
-                dialog.close()
+                try:
+                    name = name_input.value
+                    await add_player(name=name, owner_id=get_current_user().id)
+                    ui.notify(f"Created player {name}")
+                    self.build.refresh()
+                    dialog.close()
+                except Exception as e:
+                    ui.notify(e)
 
             with ui.row():
-                name_input = ui.input(label='Name')
+                name_input = ui.input(
+                    label="Player name",
+                    validation={
+                        "Too short": lambda x: len(x) >= 4,
+                        "Too long": lambda x: len(x) <= 32,
+                        "Invalid characters": lambda x: re.fullmatch(
+                            LEGAL_CHARACTERS_RE, x
+                        ),
+                    },
+                )
+                name_input.error = "Input a name"
             with ui.row():
-                ui.button('Yes', on_click=yes)
-                ui.button('No', on_click=dialog.close)
+                ui.button("Add", on_click=yes).bind_enabled_from(
+                    target_object=name_input,
+                    target_name="error",
+                    backward=lambda x: not x,
+                )
+                ui.button('Cancel', on_click=dialog.close)
             dialog.open()
 
     async def delete_player_dialog(self, player):

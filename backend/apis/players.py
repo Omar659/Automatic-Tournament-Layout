@@ -1,20 +1,27 @@
+import os
+import re
 import requests
 from typing import Final, List, Optional
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException
-from ...main import db
+
+from ..backend_utils import generate_id
+from ...main import LEGAL_CHARACTERS_RE, db
 from ..models import Player
 
-COLLECTION: Final[str] = "users"
+COLLECTION: Final[str] = db["players"]
 router = APIRouter(prefix="/players", tags=["players"])
 
 @router.get("/get_all")
-async def get_all() -> List[Player]:
-    return [Player(**x) for x in COLLECTION.find()]
+async def get_all(owner_id: str | None = None) -> List[Player]:
+    query = {}
+    if owner_id:
+        query["owner_id"] = owner_id
+    return [Player(**x) for x in COLLECTION.find(query)]
 
 
-@router.get("/get_one")
-async def get_one(id: str | None = None, name: str | None = None) -> Optional[Player]:
+@router.get("/get")
+async def get_player(id: str | None = None, name: str | None = None) -> Optional[Player]:
     # raise an error if no parameters are provided
     if not(id or name):
         raise HTTPException(status_code=404, detail="No parameters were provided")
@@ -31,22 +38,35 @@ async def get_one(id: str | None = None, name: str | None = None) -> Optional[Pl
     return player
 
 
-@router.get("/add_one")
-async def add_one(name: str, owner_id: str) -> Player:
+@router.get("/add")
+async def add_player(name: str, owner_id: str) -> Player:
+    # checks if the new name is valid
+    if not re.fullmatch(LEGAL_CHARACTERS_RE, name):
+        raise HTTPException(
+            status_code=404,
+            detail="New name contains invalid characters, or is too short or too long",
+        )
     # check if a player with that name already exists
-    if await get_one(name=name):
-        raise HTTPException(status_code=404, detail="A player with this name already exists")
+    # if await get_player(name=name):
+    #     raise HTTPException(status_code=404, detail="A player with this name already exists")
     # creates the Player object
-    player_obj = Player(id=str(uuid4()), name=name, owner_id=owner_id)
+    player_id = generate_id(key=os.environ["HASH_INIT"], init=name)
+    player_obj = Player(id=player_id, name=name, owner_id=owner_id)
     # adds it to the DB
     COLLECTION.insert_one(player_obj.model_dump())
     return player_obj
 
 
-@router.get("/delete_one")
-async def delete_one(player_id) -> Player:
-    removed_player = COLLECTION.delete_one({"id": player_id})
-    return removed_player
+@router.get("/delete")
+async def delete_player(id: str | None = None, name: str | None = None):
+    if not any([id, name]):
+        raise HTTPException(status_code=404, detail="No parameters were given")
+    query = []
+    if id:
+        query.append({"id": id})
+    if name:
+        query.append({"name": name})
+    COLLECTION.delete_one({"$or": query})
 
 
 @router.get("/delete_all")

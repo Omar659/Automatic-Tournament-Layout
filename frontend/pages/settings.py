@@ -8,14 +8,14 @@ from urllib.parse import parse_qs
 from nicegui import ui, app
 
 from ...main import MIN_NAME_LENGTH, MAX_NAME_LENGTH, LEGAL_CHARACTERS_RE
-from ..utils import get_current_user, logout, set_current_user
+from ..frontend_utils import get_current_user, logout, set_current_user
 
 from ...backend.models import User
 
 from ..widgets import Header
 
 from ...backend.apis.auth import change_user_name, delete_user, login_with_google
-from ...backend.apis.players import get_one
+from ...backend.apis.players import get_player
 
 
 class SettingsCard:
@@ -96,7 +96,6 @@ class SettingsCard:
                 )
                 ui.button("Cancel", on_click=dialog.close)
             dialog.open()
-
 
 @ui.page("/settings")
 async def settings():
