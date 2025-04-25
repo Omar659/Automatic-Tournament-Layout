@@ -43,7 +43,6 @@ def get_selected_players_from_storage() -> List[Player]:
     # eventually creates the key
     key = "selected_players"
     if not key in app.storage.user:
-        print("created key when getting")
         app.storage.user[key] = []
     # removes corrupted values
     remove_corrupted_indices_from_storage(key=key, model=Player)

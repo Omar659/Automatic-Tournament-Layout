@@ -19,10 +19,16 @@ from ...backend.apis.players import get_all, search_players
 
 class SelectedPlayersList:
 
+    selected_players: List[Player] = []
+
     @ui.refreshable_method
     async def build(self):
+        self.selected_players = get_selected_players_from_storage()
+        ui.label(f"Selected players ({len(self.selected_players)})").classes(
+            "text-xl"
+        )
         with ui.list().props("dense separator"):
-            for player in get_selected_players_from_storage():
+            for player in self.selected_players:
                 with ui.row():
                     ui.item(player.name)
                     ui.button(
@@ -112,9 +118,9 @@ class CreateTournamentCard:
                 on_change=lambda x: self.searched_players_list.build.refresh(),
             ).bind_value(self.searched_players_list, "current_search")
             await self.searched_players_list.build()
-
-            ui.label("Selected players").classes("text-xl")
             await self.selected_players_list.build()
+            
+            ui.button(text="Create tournament", icon="add").bind_enabled_from(self.selected_players_list, "selected_players", lambda x: 2 <= len(x) <= 32)
             # if search_input:
             #     ui.button(f"Create new player {search_input.value}")
             # ui.select(
