@@ -36,3 +36,42 @@ bash serve.sh
 ```
 
 Now the website can be viewed at [localhost](http://127.0.0.1:1337).
+
+## Structure of this repo
+
+This repo is currently arranged as follows:
+```
+.
+|-- README.md
+|-- backend
+|   |-- apis
+|   |   |-- auth.py
+|   |   |-- games.py
+|   |   |-- players.py
+|   |   `-- tournaments.py
+|   |-- db.py
+|   |-- enums.py
+|   |-- models.py
+|   `-- utils.py
+|-- frontend
+|   |-- pages
+|   |   |-- create_tournament.py
+|   |   |-- index.py
+|   |   |-- player_page.py
+|   |   |-- players.py
+|   |   `-- settings.py
+|   `-- widgets.py
+|-- main.py
+|-- requirements.txt
+`-- serve.sh
+```
+where:
+- `backend` contains everything related to data structures and APIs
+    - `apis` contains all FastAPI's routers for API calls to MongoDB
+    - `enums.py` and `models.py` contains Pydantic enumerators and models, for type validation throughout the website
+    - `utils.py` contains shorthands for common functions (like interacting with local storage)
+- `frontend` contains everything related to the UI
+    - `pages` contains all the NiceGUI pages
+    - `widgets.py` contains common widgets reused by many pages
+
+This structure have been generated with `tree --charset unicode -I '__pycache__|__init__.py'`, where `tree` can be installed through `sudo apt install tree`.

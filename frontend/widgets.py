@@ -4,9 +4,9 @@ from ..backend.models import User
 
 from ..backend.utils import get_current_user
 
-from ..backend.fastapi.auth import login_with_google
+from ..backend.apis.auth import login_with_google
 
-from ..backend.db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
+# from ..backend.db import add_player_to_db, check_if_player_exists, get_players_list_from_db, remove_player_from_db
 
 class Header():
 

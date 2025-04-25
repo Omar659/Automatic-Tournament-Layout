@@ -7,13 +7,13 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ..backend.models import Player, User
-from ..backend.utils import get_current_user
+from ...backend.models import Player, User
+from ...backend.utils import get_current_user
 
-from .widgets import Header
+from ..widgets import Header
 
-from ..backend.fastapi.auth import login_with_google
-from ..backend.fastapi.players import get_all, add_one, delete_one
+from ...backend.apis.auth import login_with_google
+from ...backend.apis.players import get_all, add_one, delete_one
 
 class PlayersCard():
 

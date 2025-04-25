@@ -6,12 +6,12 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 from nicegui import ui, app
 
-from ..backend.models import GoogleUserData
+from ...backend.models import GoogleUserData
 
-from .widgets import Header
+from ..widgets import Header
 
-from ..backend.fastapi.auth import add_user, login_with_google
-from ..backend.fastapi.players import get_all
+from ...backend.apis.auth import add_user, login_with_google
+from ...backend.apis.players import get_all
 
 class HomeCard():
 
