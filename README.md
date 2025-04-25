@@ -49,7 +49,6 @@ This repo is currently arranged as follows:
 |   |   |-- games.py
 |   |   |-- players.py
 |   |   `-- tournaments.py
-|   |-- db.py
 |   |-- enums.py
 |   |-- models.py
 |   `-- utils.py
@@ -73,5 +72,8 @@ where:
 - `frontend` contains everything related to the UI
     - `pages` contains all the NiceGUI pages
     - `widgets.py` contains common widgets reused by many pages
+- `main.py` instantiates MongoDB, FastAPI and NiceGUI
+- `requirements.txt` contains all Python's requirements
+- `serve.sh` runs the website locally at `http://localhost:8081`
 
 This structure have been generated with `tree --charset unicode -I '__pycache__|__init__.py'`, where `tree` can be installed through `sudo apt install tree`.
